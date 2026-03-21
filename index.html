@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0a0a0a" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="GRIND" />
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="apple-touch-icon" href="/icon-512.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap" rel="stylesheet" />
+  <title>GRIND — Fuel Your Drive</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0a0a0a;
+      --surface: #111111;
+      --border: #1e1e1e;
+      --accent: #e8c4a0;
+      --text: #f0f0f0;
+      --muted: #555;
+      --radius: 20px;
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      min-height: 100dvh;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── APP SHELL ── */
+    .app {
+      display: flex;
+      flex-direction: column;
+      min-height: 100dvh;
+      padding-top: var(--safe-top);
+      padding-bottom: var(--safe-bottom);
+    }
+
+    /* ── HEADER ── */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 24px 0;
+    }
+    .logo {
+      font-size: 1.1rem;
+      font-weight: 900;
+      letter-spacing: 0.15em;
+      color: var(--text);
+    }
+    .logo span { color: var(--accent); }
+    .header-actions { display: flex; gap: 12px; }
+    .icon-btn {
+      width: 40px; height: 40px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      font-size: 1.1rem;
+      transition: all 0.2s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .icon-btn:active { transform: scale(0.92); }
+
+    /* ── MAIN QUOTE CARD ── */
+    .quote-section {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 24px;
+      position: relative;
+    }
+
+    .category-badge {
+      display: inline-block;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      padding: 6px 16px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 28px;
+    }
+
+    .quote-card {
+      width: 100%;
+      max-width: 420px;
+      position: relative;
+    }
+
+    .quote-mark {
+      font-size: 5rem;
+      line-height: 1;
+      color: var(--border);
+      font-family: Georgia, serif;
+      position: absolute;
+      top: -20px;
+      left: -8px;
+      user-select: none;
+    }
+
+    .quote-text {
+      font-size: clamp(1.3rem, 5vw, 1.9rem);
+      font-weight: 700;
+      line-height: 1.35;
+      letter-spacing: -0.02em;
+      color: var(--text);
+      padding-left: 12px;
+      position: relative;
+      z-index: 1;
+      margin-bottom: 24px;
+    }
+
+    .quote-author {
+      font-size: 0.82rem;
+      color: var(--muted);
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      padding-left: 12px;
+    }
+    .quote-author::before { content: "— "; }
+
+    /* ── VIBE INDICATOR ── */
+    .vibe-dot {
+      display: inline-block;
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+    .vibe-raw .vibe-dot { background: #e85555; }
+    .vibe-hard .vibe-dot { background: #e87a55; }
+    .vibe-tactical .vibe-dot { background: #a0c4e8; }
+    .vibe-classic .vibe-dot { background: #e8c4a0; }
+    .vibe-vision .vibe-dot { background: #a0e8b0; }
+
+    /* ── ACTIONS ── */
+    .actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      padding: 0 24px 24px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 100px;
+      padding: 12px 22px;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .btn:active { transform: scale(0.95); }
+    .btn.primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #000;
+      font-weight: 700;
+    }
+    .btn.liked { border-color: #e85555; color: #e85555; }
+
+    /* ── CATEGORY FILTER ── */
+    .categories {
+      display: flex;
+      gap: 8px;
+      padding: 0 24px 24px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    .categories::-webkit-scrollbar { display: none; }
+    .cat-pill {
+      flex-shrink: 0;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 100px;
+      padding: 8px 16px;
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.15s;
+      -webkit-tap-highlight-color: transparent;
+      text-transform: capitalize;
+    }
+    .cat-pill.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #000;
+      font-weight: 700;
+    }
+
+    /* ── BOTTOM NAV ── */
+    .bottom-nav {
+      display: flex;
+      border-top: 1px solid var(--border);
+      background: var(--bg);
+      padding: 12px 0 4px;
+    }
+    .nav-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      padding: 8px 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .nav-icon { font-size: 1.3rem; }
+    .nav-label { font-size: 0.65rem; color: var(--muted); font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; }
+    .nav-item.active .nav-label { color: var(--accent); }
+    .nav-item.active .nav-icon { filter: brightness(1.2); }
+
+    /* ── SCREENS ── */
+    .screen { display: none; }
+    .screen.active { display: flex; flex-direction: column; flex: 1; }
+
+    /* ── FAVOURITES ── */
+    .screen-title {
+      padding: 20px 24px 16px;
+      font-size: 1.2rem;
+      font-weight: 700;
+    }
+    .favourites-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .fav-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px 20px;
+      position: relative;
+    }
+    .fav-card .fav-text { font-size: 0.95rem; font-weight: 600; line-height: 1.5; margin-bottom: 8px; }
+    .fav-card .fav-author { font-size: 0.75rem; color: var(--muted); }
+    .fav-remove {
+      position: absolute;
+      top: 12px; right: 14px;
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: 1rem;
+      cursor: pointer;
+      padding: 4px;
+    }
+    .empty-state {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      color: var(--muted);
+      padding: 40px;
+      text-align: center;
+    }
+    .empty-state .emoji { font-size: 3rem; }
+    .empty-state p { font-size: 0.9rem; line-height: 1.6; }
+
+    /* ── SETTINGS ── */
+    .settings-list {
+      padding: 0 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .setting-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px 18px;
+    }
+    .setting-label { font-size: 0.9rem; font-weight: 500; }
+    .setting-sub { font-size: 0.75rem; color: var(--muted); margin-top: 2px; }
+    .toggle {
+      width: 44px; height: 26px;
+      background: var(--border);
+      border-radius: 100px;
+      position: relative;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .toggle.on { background: var(--accent); }
+    .toggle::after {
+      content: '';
+      position: absolute;
+      width: 20px; height: 20px;
+      background: #fff;
+      border-radius: 50%;
+      top: 3px; left: 3px;
+      transition: transform 0.2s;
+    }
+    .toggle.on::after { transform: translateX(18px); }
+
+    /* ── ADD TO HOME SCREEN BANNER ── */
+    .install-banner {
+      margin: 0 24px 16px;
+      background: linear-gradient(135deg, #1a1500, #1a1a0a);
+      border: 1px solid #3a3000;
+      border-radius: 14px;
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .install-banner .install-icon { font-size: 1.6rem; flex-shrink: 0; }
+    .install-banner .install-text { flex: 1; }
+    .install-banner .install-title { font-size: 0.88rem; font-weight: 600; color: var(--accent); }
+    .install-banner .install-sub { font-size: 0.75rem; color: var(--muted); margin-top: 2px; }
+    .install-banner .install-close { color: var(--muted); cursor: pointer; font-size: 1rem; padding: 4px; flex-shrink: 0; }
+
+    /* ── SWIPE ANIMATION ── */
+    @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .quote-card { animation: slideUp 0.3s ease; }
+
+    /* ── PWA INSTALL MODAL ── */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.8);
+      backdrop-filter: blur(4px);
+      z-index: 100;
+      display: none;
+      align-items: flex-end;
+      padding-bottom: var(--safe-bottom);
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 24px 24px 0 0;
+      padding: 28px 28px 32px;
+      width: 100%;
+    }
+    .modal h2 { font-size: 1.2rem; font-weight: 700; margin-bottom: 8px; }
+    .modal p { font-size: 0.88rem; color: var(--muted); line-height: 1.6; margin-bottom: 20px; }
+    .modal-steps { display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px; }
+    .modal-step { display: flex; align-items: center; gap: 14px; }
+    .step-num { width: 28px; height: 28px; background: var(--accent); color: #000; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 700; flex-shrink: 0; }
+    .step-text { font-size: 0.88rem; color: var(--text); }
+  </style>
+</head>
+<body>
+<div class="app" id="app">
+
+  <!-- INSTALL MODAL -->
+  <div class="modal-overlay" id="install-modal">
+    <div class="modal">
+      <h2>Add GRIND to your home screen 📱</h2>
+      <p>Get instant access from your lock screen. Works on iPhone and Android.</p>
+      <div class="modal-steps" id="install-steps">
+        <!-- filled by JS based on device -->
+      </div>
+      <button class="btn primary" style="width:100%;justify-content:center" onclick="document.getElementById('install-modal').classList.remove('open')">Got it</button>
+    </div>
+  </div>
+
+  <!-- HOME SCREEN -->
+  <div class="screen active" id="screen-home">
+
+    <!-- Header -->
+    <div class="header">
+      <div class="logo">GR<span>I</span>ND</div>
+      <div class="header-actions">
+        <div class="icon-btn" onclick="shareQuote()" title="Share">↗</div>
+        <div class="icon-btn" onclick="showInstallModal()" title="Add to home screen">⊕</div>
+      </div>
+    </div>
+
+    <!-- Install banner (shown on first visit) -->
+    <div class="install-banner" id="install-banner" style="display:none;margin-top:16px">
+      <div class="install-icon">📱</div>
+      <div class="install-text">
+        <div class="install-title">Add to your home screen</div>
+        <div class="install-sub">One tap access. Lock screen ready.</div>
+      </div>
+      <div class="install-close" onclick="dismissBanner()">✕</div>
+    </div>
+
+    <!-- Category filter -->
+    <div class="categories" id="categories"></div>
+
+    <!-- Quote -->
+    <div class="quote-section">
+      <div class="category-badge" id="quote-category">grind</div>
+      <div class="quote-card" id="quote-card">
+        <div class="quote-mark">"</div>
+        <div class="quote-text" id="quote-text">Loading...</div>
+        <div class="quote-author" id="quote-author">Unknown</div>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="actions">
+      <button class="btn" id="btn-like" onclick="toggleLike()">♡ Save</button>
+      <button class="btn primary" onclick="nextQuote()">Next →</button>
+      <button class="btn" onclick="shareQuote()">↗ Share</button>
+    </div>
+
+  </div>
+
+  <!-- FAVOURITES SCREEN -->
+  <div class="screen" id="screen-favourites">
+    <div class="screen-title">Saved 🔖</div>
+    <div class="favourites-list" id="favourites-list"></div>
+  </div>
+
+  <!-- SETTINGS SCREEN -->
+  <div class="screen" id="screen-settings">
+    <div class="screen-title">Settings ⚙️</div>
+    <div class="settings-list">
+      <div class="setting-item">
+        <div>
+          <div class="setting-label">Daily notification</div>
+          <div class="setting-sub">Morning fuel at 7:00 AM</div>
+        </div>
+        <div class="toggle" id="toggle-notif" onclick="toggleNotification()"></div>
+      </div>
+      <div class="setting-item">
+        <div>
+          <div class="setting-label">Dark mode</div>
+          <div class="setting-sub">Always on. Obviously.</div>
+        </div>
+        <div class="toggle on"></div>
+      </div>
+      <div class="setting-item" style="cursor:pointer" onclick="showInstallModal()">
+        <div>
+          <div class="setting-label">Add to home screen 📱</div>
+          <div class="setting-sub">Lock screen widget instructions</div>
+        </div>
+        <div style="color:var(--muted)">›</div>
+      </div>
+      <div class="setting-item">
+        <div>
+          <div class="setting-label">Quote category</div>
+          <div class="setting-sub" id="pref-category-label">All categories</div>
+        </div>
+      </div>
+      <div class="setting-item" style="flex-direction:column;align-items:flex-start;gap:12px">
+        <div class="setting-label">About GRIND</div>
+        <div style="font-size:0.8rem;color:var(--muted);line-height:1.7">
+          Built for founders, builders, and people who refuse to settle.<br>
+          No generic quotes. No toxic hustle culture.<br>
+          Just fuel when you need it. 🖤
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <div class="bottom-nav">
+    <div class="nav-item active" id="nav-home" onclick="showScreen('home')">
+      <div class="nav-icon">⚡</div>
+      <div class="nav-label">Today</div>
+    </div>
+    <div class="nav-item" id="nav-favourites" onclick="showScreen('favourites')">
+      <div class="nav-icon">🔖</div>
+      <div class="nav-label">Saved</div>
+    </div>
+    <div class="nav-item" id="nav-settings" onclick="showScreen('settings')">
+      <div class="nav-icon">⚙️</div>
+      <div class="nav-label">Settings</div>
+    </div>
+  </div>
+
+</div>
+
+<script type="module">
+// ── DATA ──
+const quotes = [
+  { text: "Nobody is coming to save you. Build the door yourself.", author: "Unknown", category: "grind", vibe: "raw" },
+  { text: "The market doesn't care about your effort. It rewards results.", author: "Unknown", category: "grind", vibe: "raw" },
+  { text: "You don't rise to the level of your goals. You fall to the level of your systems.", author: "James Clear", category: "grind", vibe: "tactical" },
+  { text: "Every day you don't build, someone else is.", author: "Unknown", category: "grind", vibe: "raw" },
+  { text: "Stop waiting for permission. The gatekeepers are waiting for someone like you to go first.", author: "Unknown", category: "grind", vibe: "raw" },
+  { text: "You are in danger of living a life so comfortable and soft that you will die without ever realizing your true potential.", author: "David Goggins", category: "mindset", vibe: "hard" },
+  { text: "Don't stop when you're tired. Stop when you're done.", author: "David Goggins", category: "mindset", vibe: "hard" },
+  { text: "The most important conversation is the one you have with yourself.", author: "David Goggins", category: "mindset", vibe: "hard" },
+  { text: "Be the hero of your own story.", author: "Joe Rogan", category: "mindset", vibe: "raw" },
+  { text: "When something is important enough, you do it even if the odds are not in your favour.", author: "Elon Musk", category: "mindset", vibe: "vision" },
+  { text: "Comfort is the enemy dressed in a familiar face. Move anyway.", author: "Unknown", category: "mindset", vibe: "raw" },
+  { text: "Ten thousand dollars a month isn't a dream. It's a Tuesday for the person who started two years ago.", author: "Unknown", category: "money", vibe: "raw" },
+  { text: "Price is what you pay. Value is what you get.", author: "Warren Buffett", category: "money", vibe: "classic" },
+  { text: "Rich people have small TVs and big libraries.", author: "Zig Ziglar", category: "money", vibe: "raw" },
+  { text: "Motivation is crap. When you're driven, whatever is in front of you will get destroyed.", author: "David Goggins", category: "discipline", vibe: "hard" },
+  { text: "We are what we repeatedly do. Excellence is not an act but a habit.", author: "Aristotle", category: "discipline", vibe: "classic" },
+  { text: "Discipline is choosing between what you want now and what you want most.", author: "Abraham Lincoln", category: "discipline", vibe: "classic" },
+  { text: "Your future self is watching what you do right now. Make them proud.", author: "Unknown", category: "discipline", vibe: "raw" },
+  { text: "I have not failed. I've just found 10,000 ways that won't work.", author: "Thomas Edison", category: "failure", vibe: "classic" },
+  { text: "Your excuses are valid. They're also irrelevant.", author: "Unknown", category: "failure", vibe: "raw" },
+  { text: "The biggest risk is not taking any risk.", author: "Mark Zuckerberg", category: "failure", vibe: "vision" },
+  { text: "Fall seven times, stand up eight.", author: "Japanese Proverb", category: "failure", vibe: "classic" },
+  { text: "If your dreams don't scare you, they're not big enough.", author: "Ellen Johnson Sirleaf", category: "vision", vibe: "raw" },
+  { text: "Live your life like you're the hero in your movie.", author: "Joe Rogan", category: "vision", vibe: "raw" },
+  { text: "You miss 100% of the shots you don't take.", author: "Wayne Gretzky", category: "vision", vibe: "classic" },
+  { text: "The first step is to establish that something is possible. Then probability will occur.", author: "Elon Musk", category: "vision", vibe: "vision" },
+  { text: "Hard work beats talent when talent doesn't work hard.", author: "Tim Notke", category: "discipline", vibe: "raw" },
+  { text: "The person who says it cannot be done should not interrupt the person doing it.", author: "Chinese Proverb", category: "grind", vibe: "classic" },
+];
+
+const categories = ["all", "grind", "mindset", "money", "discipline", "failure", "vision"];
+
+// ── STATE ──
+let state = {
+  currentIdx: 0,
+  activeCategory: "all",
+  favourites: JSON.parse(localStorage.getItem('grind_favs') || '[]'),
+  bannerDismissed: localStorage.getItem('grind_banner') === '1',
+  notifEnabled: false,
+};
+
+function filteredQuotes() {
+  return state.activeCategory === 'all' ? quotes : quotes.filter(q => q.category === state.activeCategory);
+}
+
+function getDailyQuote() {
+  const pool = filteredQuotes();
+  const dayIdx = Math.floor(Date.now() / 86400000);
+  return pool[dayIdx % pool.length];
+}
+
+// ── RENDER ──
+function renderQuote(q) {
+  const card = document.getElementById('quote-card');
+  card.style.animation = 'none';
+  card.offsetHeight; // reflow
+  card.style.animation = 'slideUp 0.3s ease';
+
+  document.getElementById('quote-text').textContent = q.text;
+  document.getElementById('quote-author').textContent = q.author;
+  document.getElementById('quote-category').textContent = q.category;
+
+  const isLiked = state.favourites.some(f => f.text === q.text);
+  const btn = document.getElementById('btn-like');
+  btn.textContent = isLiked ? '♥ Saved' : '♡ Save';
+  btn.className = isLiked ? 'btn liked' : 'btn';
+}
+
+function renderCategories() {
+  const el = document.getElementById('categories');
+  el.innerHTML = categories.map(c => `
+    <div class="cat-pill ${c === state.activeCategory ? 'active' : ''}" onclick="setCategory('${c}')">${c}</div>
+  `).join('');
+}
+
+function renderFavourites() {
+  const el = document.getElementById('favourites-list');
+  if (state.favourites.length === 0) {
+    el.innerHTML = `<div class="empty-state"><div class="emoji">🔖</div><p>Nothing saved yet.<br>Hit the Save button on quotes you love.</p></div>`;
+    return;
+  }
+  el.innerHTML = state.favourites.map((q, i) => `
+    <div class="fav-card">
+      <button class="fav-remove" onclick="removeFav(${i})">✕</button>
+      <div class="fav-text">${q.text}</div>
+      <div class="fav-author">— ${q.author}</div>
+    </div>
+  `).join('');
+}
+
+// ── ACTIONS ──
+window.nextQuote = function() {
+  const pool = filteredQuotes();
+  state.currentIdx = (state.currentIdx + 1) % pool.length;
+  renderQuote(pool[state.currentIdx]);
+};
+
+window.setCategory = function(cat) {
+  state.activeCategory = cat;
+  state.currentIdx = 0;
+  renderCategories();
+  renderQuote(filteredQuotes()[0]);
+  document.getElementById('pref-category-label').textContent = cat === 'all' ? 'All categories' : cat.charAt(0).toUpperCase() + cat.slice(1);
+};
+
+window.toggleLike = function() {
+  const pool = filteredQuotes();
+  const q = pool[state.currentIdx];
+  const idx = state.favourites.findIndex(f => f.text === q.text);
+  if (idx === -1) {
+    state.favourites.push(q);
+  } else {
+    state.favourites.splice(idx, 1);
+  }
+  localStorage.setItem('grind_favs', JSON.stringify(state.favourites));
+  renderQuote(q);
+};
+
+window.removeFav = function(i) {
+  state.favourites.splice(i, 1);
+  localStorage.setItem('grind_favs', JSON.stringify(state.favourites));
+  renderFavourites();
+};
+
+window.shareQuote = function() {
+  const pool = filteredQuotes();
+  const q = pool[state.currentIdx];
+  const text = `"${q.text}"\n— ${q.author}\n\nvia GRIND app`;
+  if (navigator.share) {
+    navigator.share({ title: 'GRIND', text });
+  } else {
+    navigator.clipboard.writeText(text).then(() => alert('Copied to clipboard!'));
+  }
+};
+
+window.showScreen = function(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById(`screen-${name}`).classList.add('active');
+  document.getElementById(`nav-${name}`).classList.add('active');
+  if (name === 'favourites') renderFavourites();
+};
+
+window.toggleNotification = function() {
+  if ('Notification' in window) {
+    Notification.requestPermission().then(p => {
+      state.notifEnabled = p === 'granted';
+      document.getElementById('toggle-notif').className = 'toggle' + (state.notifEnabled ? ' on' : '');
+    });
+  }
+};
+
+window.dismissBanner = function() {
+  document.getElementById('install-banner').style.display = 'none';
+  localStorage.setItem('grind_banner', '1');
+};
+
+window.showInstallModal = function() {
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  const isAndroid = /Android/.test(navigator.userAgent);
+  const steps = isIOS ? [
+    { n: 1, text: 'Tap the Share button (box with arrow) in Safari' },
+    { n: 2, text: 'Scroll down and tap "Add to Home Screen"' },
+    { n: 3, text: 'Tap "Add" — GRIND appears on your home screen' },
+    { n: 4, text: 'On iOS 17+: go to Settings → Notifications to enable daily reminders' },
+  ] : [
+    { n: 1, text: 'Tap the 3-dot menu (⋮) in Chrome' },
+    { n: 2, text: 'Tap "Add to Home screen"' },
+    { n: 3, text: 'Tap "Add" — GRIND appears on your home screen' },
+    { n: 4, text: 'Allow notifications for your daily morning quote' },
+  ];
+  document.getElementById('install-steps').innerHTML = steps.map(s => `
+    <div class="modal-step">
+      <div class="step-num">${s.n}</div>
+      <div class="step-text">${s.text}</div>
+    </div>
+  `).join('');
+  document.getElementById('install-modal').classList.add('open');
+};
+
+// ── PWA ──
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  if (!state.bannerDismissed) {
+    document.getElementById('install-banner').style.display = 'flex';
+  }
+});
+
+// ── INIT ──
+function init() {
+  renderCategories();
+  const daily = getDailyQuote();
+  state.currentIdx = filteredQuotes().indexOf(daily);
+  if (state.currentIdx < 0) state.currentIdx = 0;
+  renderQuote(filteredQuotes()[state.currentIdx]);
+
+  if (!state.bannerDismissed && !window.matchMedia('(display-mode: standalone)').matches) {
+    setTimeout(() => {
+      document.getElementById('install-banner').style.display = 'flex';
+    }, 3000);
+  }
+}
+
+init();
+
+// ── SERVICE WORKER ──
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js').catch(() => {});
+}
+</script>
+</body>
+</html>
