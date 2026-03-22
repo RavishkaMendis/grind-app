@@ -443,6 +443,15 @@
       <button class="btn" onclick="shareQuote()">↗ Share</button>
     </div>
 
+    <!-- Daily Manifestation -->
+    <div style="padding:0 24px 28px">
+      <div style="background:var(--surface);border:1.5px solid var(--border);border-radius:16px;padding:16px 18px">
+        <div style="font-size:0.72rem;color:var(--accent);font-weight:600;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:10px">✍️ Today I will...</div>
+        <textarea id="journal-input" placeholder="Write one thing you'll do today to move forward..." style="width:100%;background:transparent;border:none;outline:none;color:var(--text);font-family:inherit;font-size:0.9rem;line-height:1.6;resize:none;min-height:60px" oninput="saveJournal(this.value)"></textarea>
+        <div style="font-size:0.72rem;color:var(--muted);margin-top:8px" id="journal-saved-date"></div>
+      </div>
+    </div>
+
   </div>
 
   <!-- FAVOURITES SCREEN -->
@@ -569,12 +578,13 @@ function renderStreak() {
   const streak = getStreak();
   const el = document.getElementById('streak-display');
   if (!el) return;
-  if (streak.count >= 2) {
-    el.textContent = `🔥 ${streak.count} day streak`;
-    el.style.display = 'block';
+  // Show from day 1
+  if (streak.count === 1) {
+    el.textContent = `🔥 Day 1 — keep it going`;
   } else {
-    el.style.display = 'none';
+    el.textContent = `🔥 ${streak.count} day streak`;
   }
+  el.style.display = 'block';
 }
 
 // ── STATE ──
@@ -770,10 +780,30 @@ window.addEventListener('beforeinstallprompt', e => {
   }
 });
 
+// ── JOURNAL ──
+window.saveJournal = function(text) {
+  const today = new Date().toLocaleDateString('en-CA');
+  const entries = JSON.parse(localStorage.getItem('grind_journal') || '{}');
+  entries[today] = text;
+  localStorage.setItem('grind_journal', JSON.stringify(entries));
+};
+
+function loadJournal() {
+  const today = new Date().toLocaleDateString('en-CA');
+  const entries = JSON.parse(localStorage.getItem('grind_journal') || '{}');
+  const input = document.getElementById('journal-input');
+  const label = document.getElementById('journal-saved-date');
+  if (input && entries[today]) {
+    input.value = entries[today];
+    label.textContent = 'Saved for today ✓';
+  }
+}
+
 // ── INIT ──
 function init() {
   renderCategories();
   renderStreak();
+  loadJournal();
   const daily = getDailyQuote();
   state.currentIdx = filteredQuotes().indexOf(daily);
   if (state.currentIdx < 0) state.currentIdx = 0;
