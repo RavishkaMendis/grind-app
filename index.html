@@ -403,7 +403,10 @@
 
     <!-- Header -->
     <div class="header">
-      <div class="logo">GR<span>I</span>ND</div>
+      <div>
+        <div class="logo">GR<span>I</span>ND</div>
+        <div id="streak-display" style="display:none;font-size:0.72rem;color:var(--accent);font-weight:600;margin-top:2px;letter-spacing:0.05em"></div>
+      </div>
       <div class="header-actions">
         <div class="icon-btn" onclick="shareQuote()" title="Share">↗</div>
         <div class="icon-btn" onclick="showInstallModal()" title="Add to home screen">⊕</div>
@@ -543,6 +546,37 @@ const quotes = [
 
 const categories = ["all", "grind", "mindset", "money", "discipline", "failure", "vision"];
 
+// ── STREAK ──
+function getStreak() {
+  const data = JSON.parse(localStorage.getItem('grind_streak') || '{"count":0,"lastVisit":0}');
+  const today = Math.floor(Date.now() / 86400000);
+  const lastDay = Math.floor(data.lastVisit / 86400000);
+
+  if (today === lastDay) return data; // same day, no change
+  if (today === lastDay + 1) {
+    // consecutive day — increment
+    data.count += 1;
+  } else if (today > lastDay + 1) {
+    // missed a day — reset
+    data.count = 1;
+  }
+  data.lastVisit = Date.now();
+  localStorage.setItem('grind_streak', JSON.stringify(data));
+  return data;
+}
+
+function renderStreak() {
+  const streak = getStreak();
+  const el = document.getElementById('streak-display');
+  if (!el) return;
+  if (streak.count >= 2) {
+    el.textContent = `🔥 ${streak.count} day streak`;
+    el.style.display = 'block';
+  } else {
+    el.style.display = 'none';
+  }
+}
+
 // ── STATE ──
 let state = {
   currentIdx: 0,
@@ -558,8 +592,9 @@ function filteredQuotes() {
 
 function getDailyQuote() {
   const pool = filteredQuotes();
-  const dayIdx = Math.floor(Date.now() / 86400000);
-  return pool[dayIdx % pool.length];
+  // Changes every 2 hours — 12 rotations per day
+  const twoHourBlock = Math.floor(Date.now() / (2 * 60 * 60 * 1000));
+  return pool[twoHourBlock % pool.length];
 }
 
 // ── RENDER ──
@@ -738,6 +773,7 @@ window.addEventListener('beforeinstallprompt', e => {
 // ── INIT ──
 function init() {
   renderCategories();
+  renderStreak();
   const daily = getDailyQuote();
   state.currentIdx = filteredQuotes().indexOf(daily);
   if (state.currentIdx < 0) state.currentIdx = 0;
