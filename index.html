@@ -638,13 +638,47 @@ window.removeFav = function(i) {
 window.shareQuote = function() {
   const pool = filteredQuotes();
   const q = pool[state.currentIdx];
-  const text = `"${q.text}"\n— ${q.author}\n\nvia GRIND app`;
+  const text = `"${q.text}"\n— ${q.author}\n\nGet daily fuel → ravishkamendis.github.io/grind-app`;
+
   if (navigator.share) {
-    navigator.share({ title: 'GRIND', text });
+    navigator.share({
+      title: 'GRIND ⚡',
+      text,
+      url: 'https://ravishkamendis.github.io/grind-app/'
+    }).catch(() => {});
   } else {
-    navigator.clipboard.writeText(text).then(() => alert('Copied to clipboard!'));
+    navigator.clipboard.writeText(text).then(() => {
+      // Show toast instead of alert
+      showToast('Copied to clipboard! 📋');
+    }).catch(() => {
+      // Final fallback
+      const el = document.createElement('textarea');
+      el.value = text;
+      document.body.appendChild(el);
+      el.select();
+      document.execCommand('copy');
+      document.body.removeChild(el);
+      showToast('Copied! 📋');
+    });
   }
 };
+
+function showToast(message) {
+  const existing = document.getElementById('grind-toast');
+  if (existing) existing.remove();
+  const toast = document.createElement('div');
+  toast.id = 'grind-toast';
+  toast.textContent = message;
+  toast.style.cssText = `
+    position:fixed;bottom:100px;left:50%;transform:translateX(-50%);
+    background:#e8c4a0;color:#000;padding:10px 20px;border-radius:100px;
+    font-size:0.85rem;font-weight:600;font-family:Inter,sans-serif;
+    z-index:999;animation:fadeIn 0.2s ease;pointer-events:none;
+    white-space:nowrap;
+  `;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 2500);
+}
 
 window.showScreen = function(name) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
