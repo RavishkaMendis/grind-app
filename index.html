@@ -518,6 +518,14 @@
           Just fuel when you need it. 🖤
         </div>
       </div>
+
+      <!-- Feedback -->
+      <div class="setting-item" style="flex-direction:column;align-items:flex-start;gap:12px">
+        <div class="setting-label">Send Feedback 💬</div>
+        <div style="font-size:0.8rem;color:var(--muted);margin-bottom:4px">What's missing? What would make you use this every day?</div>
+        <textarea id="feedback-text" placeholder="Your feedback..." style="width:100%;background:#1a1a1a;border:1px solid var(--border);border-radius:10px;padding:10px 12px;color:var(--text);font-family:inherit;font-size:0.85rem;line-height:1.5;resize:none;min-height:80px;outline:none"></textarea>
+        <button onclick="submitFeedback()" style="background:var(--accent);color:#000;border:none;border-radius:10px;padding:10px 20px;font-family:inherit;font-size:0.85rem;font-weight:600;cursor:pointer;width:100%" id="feedback-btn">Send Feedback →</button>
+      </div>
     </div>
   </div>
 
@@ -873,6 +881,18 @@ window.addEventListener('beforeinstallprompt', e => {
     document.getElementById('install-banner').style.display = 'flex';
   }
 });
+
+// ── FEEDBACK ──
+window.submitFeedback = function() {
+  const text = document.getElementById('feedback-text').value.trim();
+  if (!text) return;
+  const subject = encodeURIComponent('GRIND App Feedback');
+  const body = encodeURIComponent(text);
+  window.location.href = `mailto:tech.ravishka@gmail.com?subject=${subject}&body=${body}`;
+  const btn = document.getElementById('feedback-btn');
+  btn.textContent = 'Opening email app... 🖤';
+  setTimeout(() => { btn.textContent = 'Send Feedback →'; }, 3000);
+};
 
 // ── JOURNAL ──
 window.saveJournal = function(text) {
