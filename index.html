@@ -812,7 +812,7 @@ function renderQuote(q) {
 
   document.getElementById('quote-text').textContent = q.text;
   document.getElementById('quote-author').textContent = q.author;
-  document.getElementById('quote-category').textContent = q.category;
+  // category badge removed
 
   const isLiked = state.favourites.some(f => f.text === q.text);
   const btn = document.getElementById('btn-like');
